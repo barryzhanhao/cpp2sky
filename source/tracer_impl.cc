@@ -89,8 +89,9 @@ void TracerImpl::run() {
         &got_tag, &ok, gpr_time_from_nanos(0, GPR_CLOCK_REALTIME));
     switch (status) {
       case grpc::CompletionQueue::TIMEOUT:
+          std::cout<< "file path:" << __FILE__<< " function name:" << __FUNCTION__<< " line:" << __LINE__<<std::endl;
           trigger();
-        continue;
+            continue;
       case grpc::CompletionQueue::SHUTDOWN:
         return;
       case grpc::CompletionQueue::GOT_EVENT:
@@ -108,9 +109,9 @@ void TracerImpl::cdsRequest() {
 }
 
 void TracerImpl::trigger() {
-   if (reporter_client_) {
-       reporter_client_->trigger();
-   }
+    if (reporter_client_) {
+        reporter_client_->trigger();
+    }
 }
 
 
@@ -124,8 +125,7 @@ void TracerImpl::init(TracerConfig& config,
           config.address(), cq_,
           absl::make_unique<GrpcAsyncSegmentReporterStreamBuilder>(
               config.token()),
-          cred,
-          config.delayed_buffer_size());
+          cred);
     } else {
       throw TracerException("REST is not supported.");
     }

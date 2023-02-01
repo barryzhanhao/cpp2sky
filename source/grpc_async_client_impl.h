@@ -46,14 +46,13 @@ class GrpcAsyncSegmentReporterClient final
       const std::string& address, grpc::CompletionQueue& cq,
       ClientStreamingStreamBuilderPtr<TracerRequestType, TracerResponseType>
           factory,
-      std::shared_ptr<grpc::ChannelCredentials> cred,
-      uint32_t delayed_buffer_size);
+      std::shared_ptr<grpc::ChannelCredentials> cred);
   ~GrpcAsyncSegmentReporterClient();
 
   // AsyncClient
   void sendMessage(TracerRequestType message) override;
   void trigger() override;
-  CircularBuffer<TracerRequestType>& pendingMessages() override {
+    CircularBuffer<TracerRequestType>& pendingMessages() override {
     return pending_messages_;
   }
   void startStream() override;
@@ -74,9 +73,8 @@ class GrpcAsyncSegmentReporterClient final
   grpc::CompletionQueue& cq_;
   grpc::TemplatedGenericStub<TracerRequestType, TracerResponseType> stub_;
   AsyncStreamSharedPtr<TracerRequestType, TracerResponseType> stream_;
-//  CircularBuffer<TracerRequestType> pending_messages_{
-//      pending_message_buffer_size};
-  CircularBuffer<TracerRequestType> pending_messages_;
+  CircularBuffer<TracerRequestType> pending_messages_{
+      pending_message_buffer_size};
 
   std::mutex mux_;
   std::condition_variable cv_;
@@ -93,7 +91,6 @@ class GrpcAsyncSegmentReporterStream final
   // AsyncStream
   void sendMessage(TracerRequestType message) override;
   void trigger() override;
-
   // AsyncStreamCallback
   void onReady() override;
   void onIdle() override;
