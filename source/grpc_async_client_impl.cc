@@ -33,10 +33,9 @@ GrpcAsyncSegmentReporterClient::GrpcAsyncSegmentReporterClient(
     const std::string& address, grpc::CompletionQueue& cq,
     ClientStreamingStreamBuilderPtr<TracerRequestType, TracerResponseType>
         factory,
-    std::shared_ptr<grpc::ChannelCredentials> cred, uint32_t delayed_buffer_size)
+    std::shared_ptr<grpc::ChannelCredentials> cred)
     : factory_(std::move(factory)),
       cq_(cq),
-      pending_messages_(static_cast<size_t>(delayed_buffer_size)),
       stub_(grpc::CreateChannel(address, cred)) {
   startStream();
 }
@@ -59,6 +58,7 @@ void GrpcAsyncSegmentReporterClient::trigger() {
         stream_->trigger();
     }
 }
+
 
 void GrpcAsyncSegmentReporterClient::sendMessage(TracerRequestType message) {
   pending_messages_.push(message);
@@ -109,13 +109,13 @@ GrpcAsyncSegmentReporterStream::GrpcAsyncSegmentReporterStream(
 }
 
 void GrpcAsyncSegmentReporterStream::sendMessage(TracerRequestType message) {
-    clearPendingMessage();
+  clearPendingMessage();
 }
-
 
 void GrpcAsyncSegmentReporterStream::trigger() {
-   onIdle();
+    onIdle();
 }
+
 
 bool GrpcAsyncSegmentReporterStream::clearPendingMessage() {
   if (state_ != StreamState::Idle || client_.pendingMessages().empty()) {
@@ -134,6 +134,7 @@ bool GrpcAsyncSegmentReporterStream::clearPendingMessage() {
 
 void GrpcAsyncSegmentReporterStream::onReady() {
   info("[Reporter] Stream ready");
+
   state_ = StreamState::Idle;
   onIdle();
 }

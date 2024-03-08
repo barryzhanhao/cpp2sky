@@ -32,6 +32,7 @@ class AsyncClient {
   virtual ~AsyncClient() = default;
 
   virtual void trigger() = 0;
+
   /**
    * Send the specified protobuf message.
    */

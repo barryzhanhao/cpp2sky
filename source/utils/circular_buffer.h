@@ -44,9 +44,7 @@ class CircularBuffer {
     if (empty()) {
       return absl::nullopt;
     }
-    size_t front_now = front_;
-    front_ = (front_ + 1) % max_capacity_;
-    return buf_[front_now].value;
+    return buf_[front_].value;
   }
 
   /**
@@ -103,17 +101,16 @@ class CircularBuffer {
 
  private:
   void popInternal() {
-    if (empty() || buf_[pop_].is_destroyed_) {
+    if (empty() || buf_[front_].is_destroyed_) {
       return;
     }
     // Not to destroy actual data.
-    buf_[pop_].is_destroyed_ = true;
+    buf_[front_].is_destroyed_ = true;
     --item_count_;
-      pop_ = (pop_ + 1) % max_capacity_;
+    front_ = (front_ + 1) % max_capacity_;
   }
 
   size_t front_ = 0;
-  size_t pop_ = 0;
   size_t back_ = 0;
   size_t max_capacity_;
   size_t item_count_ = 0;
