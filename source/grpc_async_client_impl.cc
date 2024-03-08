@@ -33,9 +33,10 @@ GrpcAsyncSegmentReporterClient::GrpcAsyncSegmentReporterClient(
     const std::string& address, grpc::CompletionQueue& cq,
     ClientStreamingStreamBuilderPtr<TracerRequestType, TracerResponseType>
         factory,
-    std::shared_ptr<grpc::ChannelCredentials> cred)
+    std::shared_ptr<grpc::ChannelCredentials> cred, uint32_t delayed_buffer_size)
     : factory_(std::move(factory)),
       cq_(cq),
+      pending_messages_(static_cast<size_t>(delayed_buffer_size)),
       stub_(grpc::CreateChannel(address, cred)) {
   startStream();
 }
@@ -53,19 +54,25 @@ GrpcAsyncSegmentReporterClient::~GrpcAsyncSegmentReporterClient() {
   resetStream();
 }
 
+void GrpcAsyncSegmentReporterClient::trigger() {
+    if (stream_) {
+        stream_->trigger();
+    }
+}
+
 void GrpcAsyncSegmentReporterClient::sendMessage(TracerRequestType message) {
   pending_messages_.push(message);
 
-  if (!stream_) {
-    info(
-        "[Reporter] No active stream, inserted message into pending message "
-        "queue. "
-        "pending message size: {}",
-        pending_messages_.size());
-    return;
-  }
-
-  stream_->sendMessage(message);
+//  if (!stream_) {
+//    info(
+//        "[Reporter] No active stream, inserted message into pending message "
+//        "queue. "
+//        "pending message size: {}",
+//        pending_messages_.size());
+//    return;
+//  }
+//
+//  stream_->sendMessage(message);
 }
 
 void GrpcAsyncSegmentReporterClient::startStream() {
@@ -102,7 +109,12 @@ GrpcAsyncSegmentReporterStream::GrpcAsyncSegmentReporterStream(
 }
 
 void GrpcAsyncSegmentReporterStream::sendMessage(TracerRequestType message) {
-  clearPendingMessage();
+    clearPendingMessage();
+}
+
+
+void GrpcAsyncSegmentReporterStream::trigger() {
+   onIdle();
 }
 
 bool GrpcAsyncSegmentReporterStream::clearPendingMessage() {
@@ -116,12 +128,12 @@ bool GrpcAsyncSegmentReporterStream::clearPendingMessage() {
 
   request_writer_->Write(message.value(),
                          reinterpret_cast<void*>(&write_done_));
+  state_ = StreamState::OnTheWay;
   return true;
 }
 
 void GrpcAsyncSegmentReporterStream::onReady() {
   info("[Reporter] Stream ready");
-
   state_ = StreamState::Idle;
   onIdle();
 }
