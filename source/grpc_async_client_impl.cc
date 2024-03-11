@@ -102,7 +102,7 @@ GrpcAsyncSegmentReporterStream::GrpcAsyncSegmentReporterStream(
 }
 
 void GrpcAsyncSegmentReporterStream::sendMessage(TracerRequestType message) {
-  clearPendingMessage();
+//  clearPendingMessage();
 }
 
 bool GrpcAsyncSegmentReporterStream::clearPendingMessage() {
@@ -113,7 +113,6 @@ bool GrpcAsyncSegmentReporterStream::clearPendingMessage() {
   if (!message.has_value()) {
     return false;
   }
-
   request_writer_->Write(message.value(),
                          reinterpret_cast<void*>(&write_done_));
   return true;
@@ -122,6 +121,7 @@ bool GrpcAsyncSegmentReporterStream::clearPendingMessage() {
 void GrpcAsyncSegmentReporterStream::onReady() {
   info("[Reporter] Stream ready");
 
+  clearPendingMessage();
   state_ = StreamState::Idle;
   onIdle();
 }
@@ -133,6 +133,8 @@ void GrpcAsyncSegmentReporterStream::onIdle() {
   // to write.
   if (!clearPendingMessage()) {
     cv_.notify_all();
+     sleep(1);
+      onIdle();
   }
 }
 
