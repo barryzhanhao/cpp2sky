@@ -89,9 +89,8 @@ void TracerImpl::run() {
         &got_tag, &ok, gpr_time_from_nanos(0, GPR_CLOCK_REALTIME));
     switch (status) {
       case grpc::CompletionQueue::TIMEOUT:
-          std::cout<< "file path:" << __FILE__<< " function name:" << __FUNCTION__<< " line:" << __LINE__<<std::endl;
           trigger();
-            continue;
+          continue;
       case grpc::CompletionQueue::SHUTDOWN:
         return;
       case grpc::CompletionQueue::GOT_EVENT:

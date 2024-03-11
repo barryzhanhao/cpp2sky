@@ -10,6 +10,7 @@ project(cpp2sky
     HOMEPAGE_URL "https://github.com/SkyAPM/cpp2sky"
 )
 
+add_compile_options(-fPIC)
 option(OVERRIDE_CXX_STANDARD_FLAGS "Force building with -std=c++11 even if the CXXFLAGS are configured differently" ON)
 option(SPDLOG_FETCHCONTENT         "Using spdlog FetchContent to build" ON)
 option(FMTLIB_FETCHCONTENT         "Using fmt FetchContent to build" ON)
