@@ -51,7 +51,8 @@ class GrpcAsyncSegmentReporterClient final
 
   // AsyncClient
   void sendMessage(TracerRequestType message) override;
-  CircularBuffer<TracerRequestType>& pendingMessages() override {
+  void trigger() override;
+    CircularBuffer<TracerRequestType>& pendingMessages() override {
     return pending_messages_;
   }
   void startStream() override;
@@ -89,7 +90,7 @@ class GrpcAsyncSegmentReporterStream final
 
   // AsyncStream
   void sendMessage(TracerRequestType message) override;
-
+  void trigger() override;
   // AsyncStreamCallback
   void onReady() override;
   void onIdle() override;
