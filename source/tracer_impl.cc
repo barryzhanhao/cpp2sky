@@ -83,8 +83,12 @@ void TracerImpl::run() {
       cdsRequest();
     }
 
+    #if 0
     grpc::CompletionQueue::NextStatus status = cq_.AsyncNext(
         &got_tag, &ok, gpr_time_from_nanos(0, GPR_CLOCK_REALTIME));
+    #endif
+    grpc::CompletionQueue::NextStatus status = cq_.AsyncNext(
+        &got_tag, &ok, gpr_time_from_nanos(100000000, GPR_TIMESPAN));
     switch (status) {
       case grpc::CompletionQueue::TIMEOUT:
         continue;
