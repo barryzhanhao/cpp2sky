@@ -30,26 +30,26 @@ TracerImpl::TracerImpl(TracerConfig& config,
     : config_(config),
 //      evloop_thread_([this] { this->run(); }),
       segment_factory_(config) {
-  init(config, cred);
-  evloop_thread_ = std::thread([this] { this->run(); });
+  // init(config, cred);
+  // evloop_thread_ = std::thread([this] { this->run(); });
 }
 
 TracerImpl::TracerImpl(
     TracerConfig& config,
     AsyncClientPtr<TracerRequestType, TracerResponseType> reporter_client)
     : config_(config),
-      reporter_client_(std::move(reporter_client)),
+      // reporter_client_(std::move(reporter_client)),
 //      evloop_thread_([this] { this->run(); }),
       segment_factory_(config) {
-  init(config, nullptr);
-  evloop_thread_ = std::thread([this] { this->run(); });
+  // init(config, nullptr);
+  // evloop_thread_ = std::thread([this] { this->run(); });
 }
 
 TracerImpl::~TracerImpl() {
-  reporter_client_.reset();
-  cds_client_.reset();
-  cq_.Shutdown();
-  evloop_thread_.join();
+  // reporter_client_.reset();
+  // cds_client_.reset();
+  // cq_.Shutdown();
+  // evloop_thread_.join();
 }
 
 TracingContextSharedPtr TracerImpl::newContext() {

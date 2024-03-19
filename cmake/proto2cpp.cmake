@@ -73,9 +73,10 @@ endif()
 
 # compile skywalking-data-collect-protocol/*.proto
 set(NEED_GRPC_SERVICE ON)
-set(PROTOC_FILES language-agent/Tracing.proto language-agent/ConfigurationDiscoveryService.proto)
+set(PROTOC_FILES language-agent/Tracing.proto language-agent/ConfigurationDiscoveryService.proto management/Management.proto)
 set(PROTOC_BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/skywalking-data-collect-protocol")
 PROTOBUF_GENERATE_CPP(SERVICE_PROTO_SRCS SERVICE_PROTO_HDRS ${PROTOC_BASE_DIR} ${NEED_GRPC_SERVICE} ${PROTOC_FILES})
+
 
 set(NEED_GRPC_SERVICE OFF)
 set(PROTOC_FILES common/Common.proto)
